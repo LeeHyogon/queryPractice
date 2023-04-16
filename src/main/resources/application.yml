@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/querydsl?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: gongon
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        #show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 100
+
+logging.level:
+  org.hibernate.SQL: debug
+  #org.hibernate.type: trace
+
+server:
+  port: 9094
+  error:
+    include-exception: true # ?? ??? exception? ??? ???? ?? include-stacktrace: always # ?? ??? stacktrace ??? ??? ? ??
+    include-stacktrace: always # ?? ??? stacktrace ??? ??? ? ??
+
