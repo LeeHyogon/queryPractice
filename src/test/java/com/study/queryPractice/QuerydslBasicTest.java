@@ -2,6 +2,7 @@ package com.study.queryPractice;
 
 
 import com.querydsl.core.Tuple;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.queryPractice.domain.Member;
 import com.study.queryPractice.domain.QMember;
@@ -20,6 +21,7 @@ import javax.transaction.Transactional;
 
 import java.util.List;
 
+import static com.querydsl.jpa.JPAExpressions.*;
 import static com.study.queryPractice.domain.QMember.member;
 import static com.study.queryPractice.domain.QTeam.*;
 import static org.assertj.core.api.Assertions.*;
@@ -218,5 +220,56 @@ public class QuerydslBasicTest {
         boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
         assertThat(loaded).as("페치 조인 적용").isTrue();
     }
-    
+    /*
+     * 나이가 가장 많은 회원 조회
+     */
+    @Test
+    public void subQuery() throws Exception {
+        //memberSub 따로 명칭 안해줘도 서브쿼리는
+        //member를 구분하도록 최신버전은 업데이트가 된듯..?
+        QMember memberSub = new QMember("memberSub");
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.goe(
+                        select(member.age.avg())
+                                .from(member)
+                ))
+                .fetch();
+
+        assertThat(result).extracting("age")
+                .containsExactly(30,40);
+    }
+
+    @Test
+    public void subQueryIn() throws Exception {
+        //memberSub 따로 명칭 안해줘도 서브쿼리는
+        //member를 구분하도록 최신버전은 업데이트가 된듯..?
+        QMember memberSub = new QMember("memberSub");
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.in(
+                        select(member.age)
+                                .from(member)
+                                .where(member.age.gt(10))
+                ))
+                .fetch();
+
+        assertThat(result).extracting("age")
+                .containsExactly(20,30,40);
+    }
+
+    @Test
+    public void selectSubQuery() throws Exception {
+        List<Tuple> result = queryFactory
+                .select(member.username,
+                        select(member.age.avg())
+                                .from(member))
+                .from(member)
+                .fetch();
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
+    }
 }
