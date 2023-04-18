@@ -12,6 +12,7 @@ import com.study.queryPractice.domain.QMember;
 import com.study.queryPractice.domain.QTeam;
 import com.study.queryPractice.domain.Team;
 import com.study.queryPractice.dto.MemberDto;
+import com.study.queryPractice.dto.QMemberDto;
 import com.study.queryPractice.dto.UserDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -402,6 +403,17 @@ public class QuerydslBasicTest {
                 .fetch();
         for (UserDto userDto : result) {
             System.out.println("userDto = " + userDto);
+        }
+    }
+
+    @Test
+    public void findDtoByQueryProjection() throws Exception {
+        List<MemberDto> result = queryFactory
+                .select(new QMemberDto(member.username, member.age))
+                .from(member)
+                .fetch();
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
         }
     }
 
