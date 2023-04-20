@@ -7,6 +7,8 @@ import com.study.queryPractice.dto.MemberTeamDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -46,5 +48,16 @@ public class MemberRepositoryTest {
         List<MemberTeamDto> result = memberRepository.search(condition);
 
         //assertThat(result).extracting("username").containsExactly("member3","member4");
+    }
+
+    @Test
+    public void searchTestSimple() throws Exception {
+        MemberSearchCondition condition = new MemberSearchCondition();
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        Page<MemberTeamDto> result = memberRepository.searchPageSimple(condition, pageRequest);
+
+        for (MemberTeamDto memberTeamDto : result) {
+            System.out.println("memberTeamDto = " + memberTeamDto);
+        }
     }
 }
