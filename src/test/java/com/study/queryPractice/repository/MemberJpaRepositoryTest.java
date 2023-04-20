@@ -4,7 +4,6 @@ package com.study.queryPractice.repository;
 import com.study.queryPractice.domain.Member;
 import com.study.queryPractice.dto.MemberSearchCondition;
 import com.study.queryPractice.dto.MemberTeamDto;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
