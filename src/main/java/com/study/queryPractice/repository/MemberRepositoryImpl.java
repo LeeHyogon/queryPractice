@@ -2,16 +2,20 @@ package com.study.queryPractice.repository;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.study.queryPractice.domain.Member;
 import com.study.queryPractice.dto.MemberSearchCondition;
 import com.study.queryPractice.dto.MemberTeamDto;
 import com.study.queryPractice.dto.QMemberTeamDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 import static com.study.queryPractice.domain.QMember.member;
 import static com.study.queryPractice.domain.QTeam.team;
@@ -94,8 +98,8 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
-        long total = queryFactory
+        /*
+        JPAQuery<Member> countQuery = queryFactory
                 .select(member)
                 .from(member)
                 .leftJoin(member.team, team)
@@ -104,10 +108,26 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                         teamNameEq(condition.getTeamName()),
                         ageGoe(condition.getAgeGoe()),
                         ageLoe(condition.getAgeLoe())
-                )
-                .fetch().size();
+                );
+         */
+        //fetchCount()가 deprecated 되어
+        //fetch().size()를 사용하면안된다. size()의 방식은 영속성 컨텍스트를 전부 받아온 뒤에
+        // 갯수를 따로 세는 것이므로 불필요하게 메모리를 잡아먹는다. 매우 위험. 절대 사용금지.
 
-        return new PageImpl<>(content, pageable, total);
+        Long total= queryFactory
+                .select(member.count())
+                .from(member)
+                .leftJoin(member.team, team)
+                .where(
+                        usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe())
+                ).fetchOne();
+
+        //return PageableExecutionUtils.getPage(content, pageable, countQuery.fetch()::size);
+        return new PageImpl<>(content, pageable,total);
+        //return new PageImpl<>(content, pageable, total);
     }
 
     private BooleanExpression usernameEq(String username) {
