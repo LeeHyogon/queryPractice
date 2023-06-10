@@ -2,6 +2,7 @@ package com.study.queryPractice.repository;
 
 
 import com.study.queryPractice.domain.Member;
+import com.study.queryPractice.domain.QMember;
 import com.study.queryPractice.dto.MemberSearchCondition;
 import com.study.queryPractice.dto.MemberTeamDto;
 import org.junit.jupiter.api.Test;
@@ -59,5 +60,15 @@ public class MemberRepositoryTest {
         for (MemberTeamDto memberTeamDto : result) {
             System.out.println("memberTeamDto = " + memberTeamDto);
         }
+    }
+
+    @Test
+    void querydslPredicateExecutorTest() {
+        QMember member=QMember.member;
+        Iterable<Member> result = memberRepository.findAll(member.age.between(10, 40).and(member.username.eq("member1")));
+        for (Member member1 : result) {
+            System.out.println("member1 = " + member1);
+        }
+
     }
 }
